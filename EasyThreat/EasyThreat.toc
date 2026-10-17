@@ -1,0 +1,59 @@
+## Interface: 11200
+## Title: EasyThreat
+## Notes: Compact party and pet threat for OctoWoW. /et
+## Author: VanCleef
+## Version: dev
+## SavedVariablesPerCharacter: EasyThreatDB, EasyThreatRecordingDB, EasyThreatJournalDB
+
+Core.lua
+Locale.lua
+LocaleExtra.lua
+LocaleUpdate.lua
+LocaleClasses.lua
+LocaleRecording.lua
+LocaleGroup.lua
+LocaleDependencies.lua
+LocaleInteractions.lua
+LocaleJournal.lua
+LocaleSession.lua
+LocaleSmoke.lua
+LocaleTarget.lua
+LocaleDisplays.lua
+LocaleRisk.lua
+LocaleSources.lua
+Filters.lua
+PetIcons.lua
+Model.lua
+Nameplates.lua
+Server.lua
+SourceTest.lua
+Sources.lua
+Estimate.lua
+ClassRules.lua
+Rules.lua
+Peers.lua
+PullRisk.lua
+Recording.lua
+RecordingCodec.lua
+LocalThreat.lua
+ThreatView.lua
+TargetDisplay.lua
+DisplayPolicy.lua
+Animation.lua
+UI.lua
+Targeting.lua
+Tooltip.lua
+SpellTooltip.lua
+ClientDiagnostics.lua
+Diagnostics.lua
+Export.lua
+Import.lua
+Preview.lua
+Config.lua
+ConfigPages.lua
+Journal.lua
+JournalUI.lua
+Bootstrap.lua
+Recorder.lua
+Session.lua
+RecordingGroup.lua

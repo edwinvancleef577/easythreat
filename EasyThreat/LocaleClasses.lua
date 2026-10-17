@@ -1,0 +1,18 @@
+-- Diagnostic additions follow the same eight-language vocabulary as the UI.
+local locales={"enUS","deDE","frFR","esES","ptBR","ruRU","koKR","zhCN"}
+local rows={
+    {"Class rules: %s. Live server calibration is pending.","Klassenregeln: %s. Abgleich mit Live-Serverwerten steht aus.","Règles de classe : %s. Vérification sur serveur en attente.","Reglas de clase: %s. Pendiente de verificar en el servidor.","Regras de classe: %s. Validação no servidor pendente.","Правила классов: %s. Проверка на сервере ещё не выполнена.","직업 규칙: %s. 실제 서버 수치 검증이 필요합니다.","职业规则：%s。尚待实际服务器数值验证。"},
+    {"%s: party talents unavailable; using approximate base values.","%s: Fremde Talente nicht verfügbar; Grundwerte sind Näherungen.","%s : talents du groupe indisponibles ; valeurs de base approximatives.","%s: talentos del grupo no disponibles; valores base aproximados.","%s: talentos do grupo indisponíveis; valores básicos aproximados.","%s: таланты участника неизвестны; базовые значения приблизительны.","%s: 파티원 특성을 알 수 없어 기본값으로 추정합니다.","%s：无法获取队友天赋，使用近似基础值。"},
+    {"%s: talent not identified (%s). Check client language and talent data.","%s: Talent nicht erkannt (%s). Clientsprache und Talentdaten prüfen.","%s : talent non identifié (%s). Vérifiez langue et données du client.","%s: talento no identificado (%s). Revisa idioma y datos del cliente.","%s: talento não identificado (%s). Verifique idioma e dados do cliente.","%s: талант не распознан (%s). Проверьте язык и данные клиента.","%s: 특성을 식별하지 못했습니다 (%s). 클라이언트 언어와 데이터를 확인하세요.","%s：未识别天赋（%s）。请检查客户端语言和天赋数据。"},
+    {"%s: %s unavailable; class factors may be incomplete.","%s: %s nicht verfügbar; Klassenfaktoren eventuell unvollständig.","%s : %s indisponible ; modificateurs de classe incomplets.","%s: %s no disponible; modificadores de clase incompletos.","%s: %s indisponível; modificadores de classe incompletos.","%s: %s недоступно; модификаторы класса могут быть неполными.","%s: %s 정보가 없어 직업 계수가 불완전할 수 있습니다.","%s：缺少%s信息，职业系数可能不完整。"},
+    {"%s: %s needs verification. Affected local percentages withheld until combat ends.","%s: %s ungeklärt. Betroffene lokale Prozente bis Kampfende ausgeblendet.","%s : %s à vérifier. Pourcentages locaux concernés masqués jusqu’à la fin du combat.","%s: %s sin verificar. Porcentajes afectados ocultos hasta terminar el combate.","%s: %s não verificado. Percentuais afetados ocultos até o fim do combate.","%s: %s требует проверки. Затронутые локальные проценты скрыты до конца боя.","%s: %s 검증 필요. 관련 추정 백분율은 전투 종료까지 숨깁니다.","%s：%s尚未确认。相关本地百分比将隐藏至战斗结束。"},
+    {"Spell school","Zauberschule","École de magie","Escuela de magia","Escola de magia","Школа магии","주문 계열","法术学派"},
+    {"Off-hand item","Schildausrüstung","Objet en main gauche","Objeto de mano izquierda","Item da mão secundária","Предмет в левой руке","보조 장비","副手装备"},
+    {"Stance","Haltung","Posture","Actitud","Postura","Стойка","태세","姿态"},
+    {"Totem threat transfer","Totem-Threat-Übertragung","Transfert de menace des totems","Transferencia de amenaza de tótems","Transferência de ameaça de totens","Передача угрозы тотемов","토템 위협 수준 이전","图腾仇恨转移"},
+    {"Weapon enchant not identified","Waffenverzauberung nicht erkannt","Enchantement d’arme non identifié","Encantamiento de arma no identificado","Encantamento de arma não identificado","Зачарование оружия не определено","무기 강화 식별 불가","未识别武器强化"},
+    {"Talents changed during combat","Talentwechsel im Kampf","Talents modifiés en combat","Talentos cambiados durante el combate","Talentos alterados em combate","Таланты изменены в бою","전투 중 특성 변경","战斗中天赋改变"},
+}
+for _,row in ipairs(rows) do
+    for i,locale in ipairs(locales) do EasyThreat.translations[locale][row[1]]=row[i] end
+end

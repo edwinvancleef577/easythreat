@@ -1,0 +1,7 @@
+WTF/
+SavedVariables/
+*.bak
+*.log
+*.dmp
+__pycache__/
+*.pyc
