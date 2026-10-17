@@ -4,7 +4,7 @@
 
 See who has aggro and how close you or your pet are to taking it. EasyThreat adds compact bars to your existing interface and helps your group review fights together.
 
-**Build:** `20261016-target3` (development build) · **Author:** VanCleef
+**Build:** `20261017-peer1` (development build) · **Author:** VanCleef
 
 ## Installation
 
@@ -15,6 +15,10 @@ See who has aggro and how close you or your pet are to taking it. EasyThreat add
 5. Open configuration with **`/et`** or a left-click on the minimap icon.
 
 When updating, close the game and replace the addon folder. Keep your SavedVariables to retain settings. Only the **EasyThreat** folder is required; recording is built in, so a separate `EasyThreat_Recorder` addon is unnecessary.
+
+## Group-value fix
+
+Update all group members to this build together. Missing observations on another client no longer hide independently calculated local threat. Explicitly invalidated calculations remain unavailable. Diagnostics distinguishes those cases; replies also use matching unit tokens when raw GUID combat queries are unsupported. Older builds cannot read the extended value replies.
 
 ## Quick start
 
@@ -77,6 +81,10 @@ For a short source test:
 The source test reports actual requests and replies separately and does not change your roles or display settings. Zero shield events are normal without an active damage shield. A numeric difference between local and server observations can reflect timing rather than a faulty formula.
 
 **Review exports before sharing.** Settings and journal data can contain character names and other group information. Do not upload your entire account folder or private diagnostics to a public issue. Regular SavedVariables are written when the UI reloads or the game exits normally; a displayed save path alone does not mean a new file has already been written.
+
+## Regression check
+
+The included two-client regression simulates an unobserved pull, an offline roster member, a pet, an explicit threat reset and limited GUID APIs. From the repository root, install `tests/requirements.txt` and run `python tests/peer_availability.py`. These simulated checks do not replace in-game testing.
 
 ## License
 

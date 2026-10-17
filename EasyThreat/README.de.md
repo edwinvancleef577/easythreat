@@ -2,7 +2,7 @@
 
 Kompakte Aggro-Balken und ein Kampfjournal für OctoWoW. Von **VanCleef**.
 
-**Build:** `20261016-target3` (Entwicklungsstand)
+**Build:** `20261017-peer1` (Entwicklungsstand)
 
 ## Installation
 
@@ -12,6 +12,10 @@ Kompakte Aggro-Balken und ein Kampfjournal für OctoWoW. Von **VanCleef**.
 4. EasyThreat im Charakterbildschirm aktivieren. Mit **`/et`** oder einem Linksklick auf das Minimap-Icon die Konfiguration öffnen.
 
 Für Updates das Spiel beenden und den Addon-Ordner ersetzen. Die SavedVariables behalten, damit Einstellungen erhalten bleiben. Nur der Ordner **EasyThreat** ist erforderlich; die Aufnahme ist eingebaut. Ein separates Addon **EasyThreat_Recorder** wird nicht benötigt.
+
+## Korrektur für Gruppenwerte
+
+Bitte alle Gruppenmitglieder gemeinsam aktualisieren. Fehlende Beobachtungen eines anderen Clients verdrängen keine gültige lokale Threat-Berechnung mehr. Tatsächlich ungültige Berechnungen bleiben gesperrt. Die Diagnose unterscheidet diese Fälle. Für Kampfstatus-Abfragen werden passende Einheiten statt ungeeigneter GUID-Zugriffe verwendet. Ältere Builds können die erweiterten Werteantworten nicht lesen.
 
 ## Loslegen
 

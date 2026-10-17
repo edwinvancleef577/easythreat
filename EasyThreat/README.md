@@ -4,7 +4,7 @@
 
 See who has aggro and how close you or your pet are to taking it. EasyThreat adds compact bars to your existing interface and helps your group review fights together.
 
-**Build:** `20261016-target3` (development build) · **Author:** VanCleef
+**Build:** `20261017-peer1` (development build) · **Author:** VanCleef
 
 ## Installation
 
@@ -15,6 +15,10 @@ See who has aggro and how close you or your pet are to taking it. EasyThreat add
 5. Open configuration with **`/et`** or a left-click on the minimap icon.
 
 When updating, close the game and replace the addon folder. Keep your SavedVariables to retain settings. Only the **EasyThreat** folder is required; recording is built in, so a separate `EasyThreat_Recorder` addon is unnecessary.
+
+## Group-value fix
+
+Update all group members to this build together. Missing observations on another client no longer hide independently calculated local threat. Explicitly invalidated calculations remain unavailable. Diagnostics distinguishes those cases; replies also use matching unit tokens when raw GUID combat queries are unsupported. Older builds cannot read the extended value replies.
 
 ## Quick start
 

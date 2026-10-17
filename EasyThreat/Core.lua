@@ -1,5 +1,5 @@
 -- Original EasyThreat code. Keep all shipped Lua compatible with Lua 5.0.
-EasyThreat = { version = "dev", build = "20261016-target3", roster = {}, enemies = {}, serial = 0 }
+EasyThreat = { version = "dev", build = "20261017-peer1", roster = {}, enemies = {}, serial = 0 }
 local E = EasyThreat
 E.colors = {
     green = {0.24, 0.76, 0.34}, yellow = {0.94, 0.77, 0.22},

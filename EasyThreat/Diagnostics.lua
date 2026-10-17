@@ -117,7 +117,12 @@ function E:DiagnosisEntries()
         end
         for _,actor in ipairs(timing.actors) do
             local member=self:MemberForGUID(actor.actor)
-            if member and not member.pet then add("%s: shared threat received %.1f s ago.",member.name,actor.age) end
+            if member then
+                if actor.fallback then add("%s: peer measurement incomplete; showing locally calculated threat.",member.name)
+                elseif actor.known then add("%s: shared threat received %.1f s ago.",member.name,actor.age)
+                elseif actor.reason=="invalidated" then add("%s: peer calculation invalidated; old values are not reused.",member.name,nil,"warning")
+                else add("%s: peer replied without a usable value. Update both clients and export a recording if this persists.",member.name,nil,"warning") end
+            end
         end
         if self.peerRejects and self.peerRejects.version then add("Different rule versions in group. Update EasyThreat on all clients.",nil,nil,"warning") end
     end

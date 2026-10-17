@@ -331,7 +331,7 @@ function E:ApplyLocalThreat(enemy)
     if not base or base<=0 or (not remote and (data.uncertain[owner] or (self.blockedActors and self.blockedActors[owner]))) then return end
     for _,member in ipairs(self.roster) do
         local amount,shared,receivedAt=self:PeerAmount(enemy.guid,member)
-        if not shared then amount=member.guid and data.values[member.guid] end
+        if not shared then amount=member.guid and data.values[member.guid]; receivedAt=nil end
         if member.alive and member.connected and amount and (shared or (not data.uncertain[member.guid] and not (self.blockedActors and self.blockedActors[member.guid]))) and not enemy.samples[member.key] then
             local threshold,rangeSource=self:PullThreshold(enemy,member)
             enemy.samples[member.key]={pct=self:Clamp(member.guid==owner and 100 or amount/base/threshold*100,0,100),
@@ -344,10 +344,12 @@ end
 function E:PruneThreatSources()
     for guid,at in pairs(self.enemySeenIdle or {}) do if GetTime()-at>15 then self.enemySeenIdle[guid]=nil end end
     for guid,data in pairs(self.ledger or {}) do
-        if self:Exists(guid) then
-            if self:Call(UnitIsDeadOrGhost,guid) or not self:Call(UnitAffectingCombat,guid) then
+        local unit=self:ResolveEnemyUnit({guid=guid})
+        if unit and self:Exists(unit) then
+            if self:Call(UnitIsDeadOrGhost,unit) or (unit~=guid and not self:Call(UnitAffectingCombat,unit)) then
                 self.ledger[guid]=nil
-            else data.seenCombat=GetTime() end
+            elseif self:Call(UnitAffectingCombat,unit) then data.seenCombat=GetTime()
+            elseif GetTime()-(data.seenCombat or data.updated)>30 then self.ledger[guid]=nil end
         elseif GetTime()-(data.seenCombat or data.updated)>30 then
             -- Bound memory for enemies we can no longer observe. This does
             -- not mean that their threat fell to zero.

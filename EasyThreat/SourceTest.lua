@@ -110,10 +110,11 @@ function E:NoteSourceDisplay(output,guid,main,pet,box,reason)
         table.insert(row.references,model(value,box and box.referenceBars and box.referenceBars[i]))
     end
     for _,m in ipairs(self.roster or {}) do
-        local amount,shared=self:PeerAmount(guid,m)
+        local amount,shared,receivedAt,peerReason=self:PeerAmount(guid,m)
         table.insert(row.actors,{unit=m.unit,class=m.class,level=self:Call(UnitLevel,m.unit),
             pet=m.pet or false,role=self:Role(m.key),connected=m.connected,alive=m.alive,hasGUID=m.guid~=nil,
             localAmount=ledger and m.guid and ledger.values[m.guid],peerAmount=shared and amount or nil,
+            peerReason=peerReason,peerFallback=receivedAt~=nil and not shared or false,
             participated=ledger and m.guid and ledger.threatActors and ledger.threatActors[m.guid] or false,
             blocked=m.guid and ((ledger and ledger.uncertain[m.guid]) or (self.blockedActors and self.blockedActors[m.guid])) or nil})
     end

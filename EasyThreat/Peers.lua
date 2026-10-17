@@ -30,6 +30,13 @@ local function integer(value,max)
 end
 local function flag(value) if value=="1" then return true elseif value=="0" then return false end end
 local function tri(value) if value==true then return "1" elseif value==false then return "0" end; return "?" end
+-- Keep missing observations distinct from a known-invalid calculation. Old
+-- eleven-field replies remain readable, but their bare '?' is ambiguous.
+local valueReasons={K="known",M="no-data",B="incomplete-start",U="unit-unavailable",
+    I="not-in-combat",D="dead",X="invalidated"}
+local function valueStatus(value,status)
+    return valueReasons[status] and ((value=="?" and status~="K") or (value~="?" and status=="K"))
+end
 function E:PeerChannel()
     if not self.db or not self.db.groupSync or not self.db.enabled or self.demo or type(SendAddonMessage)~="function" then return end
     if (self:Call(GetNumRaidMembers) or 0)>0 then return "RAID" end
@@ -165,9 +172,13 @@ function E:ReceivePeer(prefix,body,channel,sender)
     elseif p[1]=="A" then
         if table.getn(p)~=6 or not ident(p[5]) or not integer(p[6],1000000000) then self:PeerReject("format"); return true end
     elseif p[1]=="V" then
-        if table.getn(p)~=11 or not ident(p[5]) or not ident(p[6]) or not integer(p[7],1000000000) or not ident(p[8]) or
+        local fields=table.getn(p)
+        if (fields~=11 and fields~=13) or not ident(p[5]) or not ident(p[6]) or not integer(p[7],1000000000) or not ident(p[8]) or
             (p[9]~="?" and not self:Finite(tonumber(p[9]))) or (p[10]~="?" and not self:Finite(tonumber(p[10]))) or
-            (p[11]~="-" and not ident(p[11])) then self:PeerReject("format"); return true end
+            (p[11]~="-" and not ident(p[11])) or
+            (fields==13 and (not valueStatus(p[9],p[12]) or not valueStatus(p[10],p[13]))) then
+            self:PeerReject("format"); return true
+        end
     else self:PeerReject("format"); return true end
     if not runtime or runtime.boot~=p[2] then
         local retired=runtime and runtime.retired or {}
@@ -201,16 +212,10 @@ function E:ReceivePeer(prefix,body,channel,sender)
         self.classLimits=self.classLimits or {}
         if m then self.classLimits[m.key..":foreign-talents"]=nil end
     elseif p[1]=="A" and self:PeerChannel()=="PARTY" then
-        local data=self.ledger and self.ledger[p[5]]
-        local function amount(guid)
-            if data and data.startKnown and self:Call(UnitAffectingCombat,p[5]) and not self:Call(UnitIsDeadOrGhost,p[5]) and not data.uncertain[guid] and
-                not (self.blockedActors and self.blockedActors[guid]) and self:Finite(data.values[guid]) then
-                return string.format("%.6f",data.values[guid])
-            end
-            return "?"
-        end
         local pet=self:GUID("pet")
-        self:QueuePeer("V",{owner.guid,p[2],p[6],p[5],amount(self:GUID("player")),pet and amount(pet) or "?",pet or "-"},
+        local ownValue,ownStatus=self:PeerReplyValue(p[5],self:GUID("player"))
+        local petValue,petStatus=self:PeerReplyValue(p[5],pet)
+        self:QueuePeer("V",{owner.guid,p[2],p[6],p[5],ownValue,petValue,pet or "-",ownStatus,petStatus},
             "answer:"..owner.guid..":"..p[5],2)
     elseif p[1]=="V" and self:PeerChannel()=="PARTY" then
         local request=self.peerRequests[p[8]]
@@ -219,7 +224,9 @@ function E:ReceivePeer(prefix,body,channel,sender)
             self.peerTiming.expired=self.peerTiming.expired+1; self:PeerReject("expired"); return true
         end
         local data=self.ledger and self.ledger[p[8]]
-        if not data or not data.startKnown or request.data~=data then self:PeerReject("baseline"); return true end
+        -- The sender proves its own baseline. The receiver may have joined
+        -- observation later; only its current ledger identity must match.
+        if not data or request.data~=data then self:PeerReject("baseline"); return true end
         request.responses=request.responses or {}
         local pet=p[11]~="-" and self:MemberForGUID(p[11])
         if p[11]~="-" and (not pet or not pet.pet or pet.owner~=owner.name) then self:PeerReject("pet"); return true end
@@ -231,11 +238,32 @@ function E:ReceivePeer(prefix,body,channel,sender)
         timing.maximum=math.max(timing.maximum or 0,elapsed)
         self.peerValues[p[8]]=self.peerValues[p[8]] or {}
         local values=self.peerValues[p[8]]
-        values[owner.guid]={amount=tonumber(p[9]),at=GetTime(),boot=p[2],owner=owner.guid,data=data}
-        if pet then values[pet.guid]={amount=tonumber(p[10]),at=GetTime(),boot=p[2],owner=owner.guid,data=data} end
+        values[owner.guid]={amount=tonumber(p[9]),status=p[12],at=GetTime(),boot=p[2],owner=owner.guid,data=data}
+        if pet then values[pet.guid]={amount=tonumber(p[10]),status=p[13],at=GetTime(),boot=p[2],owner=owner.guid,data=data} end
+        -- An explicit invalidation contradicts this actor's old baseline for
+        -- the rest of this fight, even if the peer later stops replying.
+        -- Fresh complete peer/API values can still override the local guard.
+        if p[12]=="X" and not data.uncertain[owner.guid] then self:InvalidateActor(owner.guid,"peer-invalidated",p[8]) end
+        if pet and p[13]=="X" and not data.uncertain[pet.guid] then self:InvalidateActor(pet.guid,"peer-invalidated",p[8]) end
         self.tooltipSample=nil
     end
     return true
+end
+function E:PeerReplyValue(enemyGUID,actorGUID)
+    if not actorGUID then return "?","M" end
+    local data=self.ledger and self.ledger[enemyGUID]
+    if (self.blockedActors and self.blockedActors[actorGUID]) or
+        (self.blockedEnemies and self.blockedEnemies[enemyGUID] and self.blockedEnemies[enemyGUID][actorGUID]) or
+        (data and data.uncertain[actorGUID]) then return "?","X" end
+    if not data then return "?","M" end
+    if not data.startKnown or data.incompleteStart then return "?","B" end
+    -- Identity support does not imply every unit API accepts a raw GUID.
+    local unit=self:ResolveEnemyUnit({guid=enemyGUID})
+    if not unit then return "?","U" end
+    if self:Call(UnitIsDeadOrGhost,unit) then return "?","D" end
+    if not self:Call(UnitAffectingCombat,unit) then return "?",unit==enemyGUID and "U" or "I" end
+    if not self:Finite(data.values[actorGUID]) then return "?","M" end
+    return string.format("%.6f",data.values[actorGUID]),"K"
 end
 function E:PeerAmount(enemyGUID,member)
     if not self:PeerChannel() or not member or member.unit=="player" or member.unit=="pet" then return nil,false end
@@ -243,7 +271,15 @@ function E:PeerAmount(enemyGUID,member)
     local owner=entry and self.peerOwners[entry.owner]
     if not entry or GetTime()-entry.at>3 or not owner or owner.boot~=entry.boot or GetTime()-owner.at>6 or
         not self:PeerProfile(member) or entry.data~=(self.ledger and self.ledger[enemyGUID]) then return nil,false end
-    return entry.amount,true,entry.at
+    local reason=valueReasons[entry.status] or (entry.amount~=nil and "known" or "legacy-unknown")
+    local missing=entry.status=="M" or entry.status=="B" or entry.status=="U"
+    if entry.amount==nil and missing and entry.data.startKnown and not entry.data.incompleteStart then
+        -- The peer has no complete observation, not evidence that this
+        -- receiver's independently observed total is wrong. Normal local
+        -- invalidation guards still apply in both consumers.
+        return nil,false,entry.at,reason
+    end
+    return entry.amount,true,entry.at,reason
 end
 function E:ServerCoordinator()
     if not self:PeerChannel() then return end
@@ -298,7 +334,10 @@ function E:PeerTick()
         self.peerLastAsk=now
         local enemies={}
         for guid,data in pairs(self.ledger or {}) do
-            if data.startKnown and self:Call(UnitAffectingCombat,guid) and not self:Call(UnitIsDeadOrGhost,guid) then table.insert(enemies,guid) end
+            -- An incomplete receiver is exactly the client that needs a
+            -- complete peer total. Resolve native tokens here as for replies.
+            local unit=self:ResolveEnemyUnit({guid=guid})
+            if unit and self:Call(UnitAffectingCombat,unit) and not self:Call(UnitIsDeadOrGhost,unit) then table.insert(enemies,guid) end
         end
         table.sort(enemies)
         if table.getn(enemies)>0 then
@@ -378,9 +417,13 @@ function E:PeerTimingSnapshot(enemyGUID)
         queueWait=timing.queueWait,timeouts=timing.timeouts or 0,expired=timing.expired or 0,
         responseAge=timing.at and math.max(0,GetTime()-timing.at),queue=table.getn(self.peerQueue or {}),actors={}}
     for _,member in ipairs(self.roster) do
-        local amount,shared,at=self:PeerAmount(enemyGUID,member)
-        if shared and member.guid then
-            table.insert(result.actors,{actor=member.guid,age=math.max(0,GetTime()-at),known=amount~=nil})
+        local amount,shared,at,reason=self:PeerAmount(enemyGUID,member)
+        if at and member.guid then
+            local data=self.ledger and self.ledger[enemyGUID]
+            local fallback=not shared and data and self:Finite(data.values[member.guid]) and
+                not data.uncertain[member.guid] and not (self.blockedActors and self.blockedActors[member.guid]) or false
+            table.insert(result.actors,{actor=member.guid,age=math.max(0,GetTime()-at),known=amount~=nil,
+                reason=reason,fallback=fallback,shared=shared})
         end
     end
     return result
