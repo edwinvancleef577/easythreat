@@ -6,12 +6,25 @@ Kompakte Aggro-Balken und ein Kampfjournal für OctoWoW. Von **VanCleef**.
 
 ## Installation
 
-1. Auf der Repository-Seite **Code → Download ZIP** wählen und das Archiv entpacken.
-2. Den enthaltenen Ordner **EasyThreat** nach `Interface/AddOns` kopieren.
-3. Die Datei muss unter `Interface/AddOns/EasyThreat/EasyThreat.toc` liegen.
-4. EasyThreat im Charakterbildschirm aktivieren. Mit **`/et`** oder einem Linksklick auf das Minimap-Icon die Konfiguration öffnen.
+### OctoWoW-Launcher
 
-Für Updates das Spiel beenden und den Addon-Ordner ersetzen. Die SavedVariables behalten, damit Einstellungen erhalten bleiben. Nur der Ordner **EasyThreat** ist erforderlich; die Aufnahme ist eingebaut. Ein separates Addon **EasyThreat_Recorder** wird nicht benötigt.
+Diese Git-Adresse im Addon-Manager des Launchers einfügen:
+
+`https://github.com/edwinvancleef577/EasyThreat.git`
+
+Die Groß-/Kleinschreibung bitte so übernehmen, insbesondere unter Linux. `EasyThreat.toc`, die Lua-Dateien und `Media/` liegen direkt im Repository-Hauptverzeichnis.
+
+Steht nach einem früheren Versuch **Failed to install** da: Spiel beenden, den bestehenden Addon-Ordner außerhalb von `Interface/AddOns` sichern, den fehlerhaften Eintrag im Launcher entfernen und die Adresse erneut hinzufügen. Den `WTF`-Ordner und die SavedVariables behalten; dort liegen die Einstellungen. Auch ein bisher manuell installiertes Addon muss für die Verwaltung durch den Launcher gegebenenfalls einmal so ersetzt werden.
+
+### ZIP manuell installieren
+
+1. Auf der Repository-Seite **Code → Download ZIP** wählen und das Archiv entpacken.
+2. Den entpackten Repository-Ordner (z. B. `easythreat-main`) in **EasyThreat** umbenennen.
+3. Diesen Ordner nach `Interface/AddOns` kopieren.
+4. Die Datei muss unter `Interface/AddOns/EasyThreat/EasyThreat.toc` liegen, ohne einen weiteren verschachtelten EasyThreat-Ordner.
+5. EasyThreat im Charakterbildschirm aktivieren. Mit **`/et`** oder einem Linksklick auf das Minimap-Icon die Konfiguration öffnen.
+
+Für manuelle Updates das Spiel beenden und den Addon-Ordner ersetzen. Die SavedVariables behalten, damit Einstellungen erhalten bleiben. Die Aufnahme ist eingebaut; ein separates Addon **EasyThreat_Recorder** wird nicht benötigt.
 
 ## Korrektur für Gruppenwerte
 

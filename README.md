@@ -8,13 +8,25 @@ See who has aggro and how close you or your pet are to taking it. EasyThreat add
 
 ## Installation
 
-1. Choose **Code → Download ZIP** on this repository and extract the archive.
-2. Copy the enclosed **EasyThreat** folder into your game's `Interface/AddOns` directory.
-3. Check that the resulting path is `Interface/AddOns/EasyThreat/EasyThreat.toc`.
-4. Enable EasyThreat on the character-selection screen and enter the game.
-5. Open configuration with **`/et`** or a left-click on the minimap icon.
+### OctoWoW Launcher
 
-When updating, close the game and replace the addon folder. Keep your SavedVariables to retain settings. Only the **EasyThreat** folder is required; recording is built in, so a separate `EasyThreat_Recorder` addon is unnecessary.
+Add this Git URL in the launcher's addon manager:
+
+`https://github.com/edwinvancleef577/EasyThreat.git`
+
+Use the capitalization shown above, especially on case-sensitive systems. The repository root contains `EasyThreat.toc`, Lua files and `Media/`, so the launcher can clone and update it directly.
+
+If an earlier attempt shows **Failed to install**, close the game, back up your existing addon folder outside `Interface/AddOns`, remove the failed entry in the launcher and add the URL again. Keep the game's `WTF` folder / SavedVariables; they contain your settings. A manually installed copy may need the same one-time replacement before the launcher can manage it.
+
+### Manual ZIP installation
+
+1. Choose **Code → Download ZIP** and extract the archive.
+2. Rename the extracted repository folder (for example `easythreat-main`) to **EasyThreat**.
+3. Copy that folder into your game's `Interface/AddOns` directory.
+4. Check that the resulting path is `Interface/AddOns/EasyThreat/EasyThreat.toc`, with no extra nested `EasyThreat` folder.
+5. Enable EasyThreat on the character-selection screen, then open settings with **`/et`** or the minimap icon.
+
+When updating manually, close the game and replace the addon folder. Keep your SavedVariables to retain settings. Recording is built in; a separate `EasyThreat_Recorder` addon is unnecessary.
 
 ## Group-value fix
 
