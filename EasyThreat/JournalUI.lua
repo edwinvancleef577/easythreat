@@ -61,8 +61,8 @@ local function decimal(v)
     return value
 end
 local function tint(a)
-    local c=a and ((a.key and E.db.colors[a.key]) or (a.owner and E.db.colors[a.owner]) or a.color) or {0.75,0.73,0.67}
-    return c
+    -- Reuse live identity rules, including distinct pet colors for older fights.
+    return E:IdentityColor(a,a and a.color or {0.75,0.73,0.67})
 end
 local function colored(s,a)
     local c=tint(a); return string.format("|cff%02x%02x%02x",c[1]*255,c[2]*255,c[3]*255)..s.."|r"

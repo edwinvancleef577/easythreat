@@ -2,7 +2,7 @@
 
 Kompakte Aggro-Balken und ein Kampfjournal für OctoWoW. Von **VanCleef**.
 
-**Build:** `20261017-peer1` (Entwicklungsstand)
+**Build:** `20261018-colors1` (Entwicklungsstand)
 
 ## Installation
 
@@ -68,3 +68,9 @@ Der Test verändert keine Rollen oder Anzeigeeinstellungen. Keine Serverantwort 
 ## Lizenz
 
 Es gilt die beiliegende [LICENSE](LICENSE). Nutzung, Kopieren, Änderungen und Weitergabe sind bei Erhalt des Hinweises erlaubt. Die Nutzung mit offiziellen, von Blizzard betriebenen World-of-Warcraft-Diensten ist nicht gestattet; OctoWoW-Nutzung ist willkommen. Unabhängiges Fanprojekt ohne Gewährleistung. Spielgrafiken und Schriften gehören ihren jeweiligen Rechteinhabern.
+
+## Spieler- und Pet-Farben
+
+Nur dein eigener Balken verwendet Warnfarben. Andere Spieler behalten ihre Spielerfarbe, auch beim Aufbau und bei fliehenden Gegnern. Pets erhalten automatisch einen anderen Farbton; eine eigene gespeicherte Pet-Farbe hat Vorrang. Unter **Spielerfarben** kannst du das Pet über die Gruppenauswahl auswählen und separat färben. Die Farben gelten auch für Gegnerliste und Journal. **Immer Spielerfarben verwenden** fixiert zusätzlich die Farbe deines eigenen Balkens. Der grüne/rote Rahmen kennzeichnet weiterhin den Aggrohalter.
+
+Das Journal startet standardmäßig in **Gruppe**. Dieses Update aktiviert die Gruppenansicht einmal auch bei bestehenden Einstellungen; spätere bewusste Umschaltungen bleiben gespeichert.

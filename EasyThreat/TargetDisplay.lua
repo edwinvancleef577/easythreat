@@ -28,7 +28,7 @@ function E:DisplayQuantities(enemy)
 end
 function E:RoleBarColor(enemy,member,pct)
     local owner=enemy.owner
-    if self.db.alwaysPlayerColors or (member.key~=self.playerKey and member.key~=self.playerKey..":pet") then
+    if self.db.alwaysPlayerColors or member.key~=self.playerKey then
         return self:IdentityColor(member)
     end
     if self:IsTank(member.key) then
@@ -90,9 +90,10 @@ function E:TargetCombatModels(enemy)
         model.borderColor=model.aggro and (E:IsTank(member.key) and E.colors.green or E.colors.red) or nil
         if enemy.fleeing then
             model.text=thin and member.name or E:L("Fleeing!")
-            if not E.db.alwaysPlayerColors then model.color=E.colors.neutral end
+            if member.key==E.playerKey and not E.db.alwaysPlayerColors then model.color=E.colors.neutral end
         elseif view.building and view.builder==(member.guid or member.key) and entry then
-            model.building=true; model.color=E.db.alwaysPlayerColors and E:IdentityColor(member) or E.colors.build
+            model.building=true
+            model.color=(E.db.alwaysPlayerColors or member.key~=E.playerKey) and E:IdentityColor(member) or E.colors.build
             model.buildAmount=string.format("%.0f",entry.amount)
             model.text=(thin and member.name or E:L("Build-up"))..": "..model.buildAmount
             model.whiteText=true

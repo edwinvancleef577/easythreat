@@ -297,7 +297,7 @@ function E:PaintRolePlaque(box,role,risk)
 end
 function E:PaintPlayer(box,member,pct,quality,risk,owner)
     local db=self.db
-    if db.alwaysPlayerColors and member then risk=self:IdentityColor(member) end
+    if member and (db.alwaysPlayerColors or member.key~=self.playerKey) then risk=self:IdentityColor(member) end
     box:SetWidth(db.cellWidth)
     local role=member and self:Role(member.key)
     self:PaintRolePlaque(box,role,risk)
@@ -308,7 +308,7 @@ function E:PaintPlayer(box,member,pct,quality,risk,owner)
     if db.listBars then
         box.bar:Show(); self:AnimateValue(box,owner and 100 or (pct or 0),
             (box.enemyKey or "")..":"..(member and (member.guid or member.key) or ""),owner or not pct)
-        box.bar:SetStatusBarColor(unpack(owner and risk or self:IdentityColor(member)))
+        box.bar:SetStatusBarColor(unpack(risk))
     else
         box.bar:Hide()
     end

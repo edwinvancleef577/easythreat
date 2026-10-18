@@ -1,5 +1,5 @@
 -- Original EasyThreat code. Keep all shipped Lua compatible with Lua 5.0.
-EasyThreat = { version = "dev", build = "20261017-peer1", roster = {}, enemies = {}, serial = 0 }
+EasyThreat = { version = "dev", build = "20261018-colors1", roster = {}, enemies = {}, serial = 0 }
 local E = EasyThreat
 E.colors = {
     green = {0.24, 0.76, 0.34}, yellow = {0.94, 0.77, 0.22},
@@ -62,6 +62,11 @@ function E:InitDB()
         EasyThreatDB = {layoutVersion=2,revision=2,tooltipLayoutVersion=1}
     end
     self.db = EasyThreatDB
+    if self.db.journalScopeVersion~=1 then
+        -- Start existing journals in group view once. Explicit later choices
+        -- remain saved; opening the book must not silently reset its filters.
+        self.db.journalOwn=false; self.db.journalScopeVersion=1
+    end
     -- The target used the shared pet gap before gaining its own control.
     if self.db.targetPetGap==nil then self.db.targetPetGap=self.db.petGap end
     if self.db.tooltipWidthVersion~=1 then
@@ -266,10 +271,46 @@ function E:SetOutput(role,output,value)
     self.db.roleViews[role][output]=value and true or false
     self.tooltipSample=nil; self.pairVisibility={}; self.visibility={}; self:RefreshUI()
 end
-function E:IdentityColor(member)
-    local custom = member and (self.db.colors[member.key] or self.db.colors[member.owner])
+function E:PetIdentityColor(color)
+    -- A related but distinct hue, not a dim copy of the owner's bar. No GUID,
+    -- roster order or combat state participates, so resummoning stays stable.
+    local r,g,b=color[1],color[2],color[3]
+    local high,low=math.max(r,g,b),math.min(r,g,b)
+    local delta=high-low
+    local hue=0
+    if delta>0 then
+        if high==r then hue=(g-b)/delta
+        elseif high==g then hue=2+(b-r)/delta
+        else hue=4+(r-g)/delta end
+        hue=hue/6
+    end
+    hue=math.mod(hue+1+1/6,1)*6
+    local saturation=math.max(.60,high>0 and delta/high or 0)
+    local value=self:Clamp(high*.95,.70,.95)
+    local sector=math.floor(hue); local fraction=hue-sector
+    local p=value*(1-saturation)
+    local q=value*(1-saturation*fraction)
+    local t=value*(1-saturation*(1-fraction))
+    if sector==0 then return {value,t,p}
+    elseif sector==1 then return {q,value,p}
+    elseif sector==2 then return {p,value,t}
+    elseif sector==3 then return {p,q,value}
+    elseif sector==4 then return {t,p,value}
+    else return {value,p,q} end
+end
+function E:IdentityColor(member,fallback)
+    local custom = member and self.db.colors[member.key]
     if type(custom) == "table" and type(custom[1]) == "number" and
         type(custom[2]) == "number" and type(custom[3]) == "number" then return custom end
+    local owner=member and member.owner
+    if not owner and member and type(member.key)=="string" then
+        local _,_,key=string.find(member.key,"^(.+):pet$"); owner=key
+    end
+    if owner then
+        local parent=self:Member(owner)
+        return self:PetIdentityColor(self:IdentityColor({key=owner,class=parent and parent.class or member.class}))
+    end
+    if fallback then return fallback end
     local class = member and RAID_CLASS_COLORS and RAID_CLASS_COLORS[member.class]
     if class then return {class.r, class.g, class.b} end
     return {0.60, 0.68, 0.78}

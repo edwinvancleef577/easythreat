@@ -4,7 +4,7 @@
 
 See who has aggro and how close you or your pet are to taking it. EasyThreat adds compact bars to your existing interface and helps your group review fights together.
 
-**Build:** `20261017-peer1` (development build) · **Author:** VanCleef
+**Build:** `20261018-colors1` (development build) · **Author:** VanCleef
 
 ## Installation
 
@@ -33,10 +33,10 @@ The initial threat threshold is **0%**. A higher threshold reduces clutter on fi
 ## Reading the bars
 
 - Your bar stays at the top, with your own living pet directly below it. Other participants appear underneath, ordered by their available threat values.
-- During initial build-up, a blue bar and number show the known threat accumulated by the sole participating actor. Once another player or pet generates threat, the display changes to the combat view.
+- During initial build-up, a number shows the known threat accumulated by the sole participating actor. Your own build-up bar is blue; other players and pets keep their identity colors. Once another player or pet generates threat, the display changes to the combat view.
 - The combat view shows proximity to taking aggro when sufficient data is available. A full challenger bar means the estimated takeover threshold has been reached; it is not a damage ranking.
 - A colored border identifies the reported or observed aggro holder: green for an assigned tank, red for another role. The holder and the actor with the largest raw threat total can differ.
-- Other participants use their configured player colors. **Always use player colors** can also keep your own bar and the build-up bar in those colors.
+- Only your own bar changes its fill color with threat state. Other players keep their configured player colors, including during build-up and fleeing. Pets automatically get a distinct hue instead of copying their owner; a saved pet color takes priority. Under **Player colors**, use the group-member button to select a pet and customize its color. These identities also apply to the enemy list and journal. **Always use player colors** additionally keeps your own bar in its identity color.
 - Missing measurements are not measured zeroes. Where possible, the last value remains faded until current data is available. An enemy's observed target can also be a temporary spell target.
 
 ## Tooltips and spacing
@@ -54,7 +54,7 @@ Under **Positions → Mouse tooltip**:
 
 Click the book icon, or right-click the minimap icon, to open the journal. It offers enemy threat tracks, resource availability and consumption, healing and damage, with a shared time cursor and a readable event log.
 
-Use the filter buttons to select tracks, switch between the group and yourself with your pets, and drag the time-range handles to inspect part of a fight. You can save one reference fight and compare it with the latest fight. Detailed journal appearance belongs in the main configuration menu.
+**Group** is the default view. This update switches existing journals to Group once; subsequent choices are remembered. Use the filter buttons to select tracks, switch between the group and yourself with your pets, and drag the time-range handles to inspect part of a fight. You can save one reference fight and compare it with the latest fight. Detailed journal appearance belongs in the main configuration menu.
 
 The journal is intended for understanding group play, not assigning a performance score. Its data-quality indicator explains missing observations and estimates. Resource loss can be affected by regeneration; observed enemy targets and healing estimates are not complete server records.
 

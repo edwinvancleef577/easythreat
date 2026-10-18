@@ -123,8 +123,8 @@ function E:ValidateSettings(data)
                 local range=E.settingRanges[key]
                 if range and (value-value~=0 or value<range[1] or value>range[2]) then fail("value",key) end
                 if (key=="maxRows" or key=="maxCandidates" or key=="otherBars") and value~=math.floor(value) then fail("value",key) end
-            elseif key=="layoutVersion" or key=="revision" or key=="tooltipLayoutVersion" or key=="tooltipWidthVersion" then
-                local maximum=(key=="tooltipLayoutVersion" or key=="tooltipWidthVersion") and 1 or 2
+            elseif key=="layoutVersion" or key=="revision" or key=="tooltipLayoutVersion" or key=="tooltipWidthVersion" or key=="journalScopeVersion" then
+                local maximum=(key=="layoutVersion" or key=="revision") and 2 or 1
                 if type(value)~="number" or value<0 or value>maximum or value~=math.floor(value) then fail("version",key) end
             else fail("unknown",tostring(key)) end
         end

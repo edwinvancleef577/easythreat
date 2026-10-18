@@ -36,7 +36,8 @@ function E:RenderPreviews()
     own.fillPct=78; own.text=""; pet.fillPct=45; own.reference.fillPct=100
     own.reference.aggro=true; own.reference.borderColor=self.colors.green
     local player=self:Member(self.playerKey)
-    if self.db.alwaysPlayerColors then own.color=self:IdentityColor(player); pet.color=self:IdentityColor(self:Member(self.playerKey..":pet") or player) end
+    if self.db.alwaysPlayerColors then own.color=self:IdentityColor(player) end
+    pet.color=self:IdentityColor(self:Member(self.playerKey..":pet") or {key=self.playerKey..":pet",owner=self.playerKey,class=player and player.class})
     own.reference.color=self:IdentityColor({key="preview:tank",class="WARRIOR"})
     own.references={own.reference}
     for i=2,self.db.otherBars or 1 do

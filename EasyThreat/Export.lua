@@ -5,7 +5,7 @@ local limit=524288
 function E:SettingsSnapshot()
     local result={}
     for key in pairs(self.defaults) do result[key]=self.db[key] end
-    for _,key in ipairs({"layoutVersion","revision","tooltipLayoutVersion","tooltipWidthVersion"}) do result[key]=self.db[key] end
+    for _,key in ipairs({"layoutVersion","revision","tooltipLayoutVersion","tooltipWidthVersion","journalScopeVersion"}) do result[key]=self.db[key] end
     return result
 end
 function E:SerializeSettings(snapshot)
