@@ -649,7 +649,12 @@ function J:PlotEvents(row)
         if lane.enemy then
             local selfCast=ev.threat and ev.actor and (not ev.target or ev.target==ev.actor) and
                 self:At(lane.enemy.series[ev.actor],ev.t,1.25)~=nil
-            relevant=relevant and (ev.target==lane.enemy.id or selfCast)
+            -- A player death has an actor, but no enemy target. Show it as a
+            -- group event on every enemy lane active at that moment, even if
+            -- threat observations for the deceased player were unavailable.
+            local playerDeath=ev.kind=="death" and f.actors[ev.actor] and
+                ev.t>=(lane.enemy.start or 0) and ev.t<=(lane.enemy.dead or f.duration or self.finish)
+            relevant=relevant and (ev.target==lane.enemy.id or selfCast or playerDeath)
         else relevant=relevant and (ev.kind~="death" or f.actors[ev.actor]) end
         if E.db.journalOwn and ev.actor and f.actors[ev.actor] and not f.actors[ev.actor].own then relevant=false end
         if relevant and n<40 then

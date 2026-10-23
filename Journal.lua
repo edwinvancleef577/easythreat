@@ -256,12 +256,20 @@ function J:SampleResources(at,record)
                         self:Point(a.spend,self:Time(at),nil,"missing",kind)
                         self:Note("Journal resource type changed")
                     end
-                    if not m.alive then self:Death(id,at) elseif a.dead then a.dead=nil end
                 end
             end
         elseif record and self.fight.actors[id] then
             self:Point(self.fight.actors[id].stock,self:Time(at),nil,"missing")
             self:Note("Journal resource observations missing")
+        end
+        -- Mortality does not depend on mana/rage being readable. Do not infer
+        -- death from an offline or unknown roster entry.
+        if record and m.connected then
+            local actor=self:Actor(m,at)
+            if actor then
+                if m.alive==false then self:Death(id,at)
+                elseif m.alive and actor.dead then actor.dead=nil end
+            end
         end
     end
     if record then self.resources=observed else self.idleResources=observed; self.idleAt=at end
