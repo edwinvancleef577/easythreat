@@ -9,12 +9,16 @@ local plotTop,plotBottom,plotHeight=14,96,102
 local textures={threat=media.."JournalBinding",stock=media.."JournalStock",spend=media.."JournalSpend",
     healing=media.."JournalHeal",damage=media.."JournalDamage",efficiency=media.."JournalEfficiency",
     aggro=media.."JournalBinding",item="Interface\\Icons\\INV_Potion_54",
-    cooldown="Interface\\Icons\\Spell_Nature_TimeStop",death="Interface\\Icons\\Ability_Rogue_FeignDeath",
+    cooldown="Interface\\Icons\\Spell_Nature_TimeStop",death="Interface\\Icons\\Spell_Shadow_DeathCoil",
     events="Interface\\Icons\\Spell_Holy_MagicalSentry",group=media.."JournalGroup",
     own=media.."JournalOwn",reference="Interface\\Icons\\INV_Misc_Note_01"}
 local labels={threat="Threat abilities",stock="Resource availability",spend="Resource consumption",healing="Healing",damage="Damage",aggro="Aggro changes",
     item="Items and potions",cooldown="Long cooldowns",death="Deaths",events="Event icons",group="Group",own="Me and pets"}
 local classLabels={normal="Normal",rare="Rare",elite="Elite",rareelite="Rare elite",worldboss="Boss"}
+local classIconCoords={
+    WARRIOR={0,.25,0,.25},MAGE={.25,.5,0,.25},ROGUE={.5,.75,0,.25},DRUID={.75,1,0,.25},
+    HUNTER={0,.25,.25,.5},SHAMAN={.25,.5,.25,.5},PRIEST={.5,.75,.25,.5},WARLOCK={.75,1,.25,.5},
+    PALADIN={0,.25,.5,.75}}
 local fallbackIcons={JournalStock="INV_Potion_76",JournalSpend="Spell_Nature_Lightning",
     JournalHeal="Spell_Holy_FlashHeal",JournalDamage="Ability_MeleeDamage",
     JournalEfficiency="INV_Potion_76",JournalBinding="INV_Shield_05",JournalBook="INV_Misc_Book_09",
@@ -35,6 +39,19 @@ function J:SetIconTexture(texture,path)
     else
         self.missingIcons[key]=true
         texture:SetTexture("Interface\\Icons\\"..fallbackIcons[key])
+    end
+end
+function J:SetEventIcon(texture,ev)
+    -- Log rows and timeline markers are pooled: always undo a previous atlas crop.
+    texture:SetTexCoord(0,1,0,1)
+    local f=self.viewFight
+    local actor=ev.kind=="death" and f and f.actors and f.actors[ev.actor]
+    if actor and not actor.pet and classIconCoords[actor.class] then
+        texture:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes")
+        texture:SetTexCoord(unpack(classIconCoords[actor.class]))
+    else
+        local path=actor and actor.pet and actor.icon or ev.icon or textures[ev.kind] or textures.item
+        self:SetIconTexture(texture,path)
     end
 end
 function J:EnemyTip(enemy)
@@ -643,7 +660,7 @@ function J:PlotEvents(row)
                 b:SetScript("OnClick",function() if b.ev then J:SetTime(b.ev.t) end end); row.events[n]=b
                 self:BindTip(b,function() return J:EventTip(b.ev) end)
             end
-            b.ev=ev; self:SetIconTexture(b.icon,ev.icon or textures[ev.kind] or textures.item)
+            b.ev=ev; self:SetEventIcon(b.icon,ev)
             local x=E:Clamp((ev.t-self.start)/(self.finish-self.start)*560-9,0,540)
             at(b,row.canvas,x,2); b:Show()
         end
@@ -863,7 +880,7 @@ function J:FillLog(offset)
                 self:BindTip(b,function() return J:EventTip(b.ev) end); w.log.rows[slot]=b
             end
             b.ev=ev; at(b,w.log.child,0,(i-1)*25); b.time:SetText(number(ev.t).." s")
-            self:SetIconTexture(b.icon,ev.icon or textures[ev.kind] or textures.healing)
+            self:SetEventIcon(b.icon,ev)
             if E.db.journalLogIcons then b.icon:Show() else b.icon:Hide() end
             local a=f.actors[ev.actor]
             local caption=ev.name or E:L(labels[ev.kind] or "Combat log")
